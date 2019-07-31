@@ -31,9 +31,9 @@
 #include <string>
 #include <iterator>
 
-#define RELICS_REQUIRED_FOR_VICTORY	7
+#define RELICS_REQUIRED_FOR_VICTORY	100
 #define MINIMUM_ACTIVE_QUESTS		3
-#define MAXIMUM_ACTIVE_QUESTS		10
+#define MAXIMUM_ACTIVE_QUESTS		20
 #define QUEST_EXPLORATION_PERCENT	100
 #define QUEST_SPAWN_RATE		4
 #define QUEST_SPAWN_CHANCE		40
@@ -128,10 +128,52 @@ static void CreateQuest(ARegionList *regions, int monfaction)
 
 	q = new Quest;
 	q->type = -1;
+
+	// Set up quest rewards
+	count = 0;
+	for (i=0; i<NITEMS; i++) {
+		if (
+				((ItemDefs[i].type & IT_ADVANCED) || (ItemDefs[i].type & IT_MAGIC)) &&
+				ItemDefs[i].baseprice < 10000 &&
+				!(ItemDefs[i].type & IT_SPECIAL) &&
+				!(ItemDefs[i].type & IT_SHIP) &&
+				!(ItemDefs[i].flags & ItemType::DISABLED)) {
+			count ++;
+			printf("ITEM: %s .\n", ItemDefs[i].name);
+		}
+	}
+
+	if (count == 0) return;
+	count = getrandom(count) + 1;
+
+	for (i=0; i<NITEMS; i++) {
+		if (
+				((ItemDefs[i].type & IT_ADVANCED) || (ItemDefs[i].type & IT_MAGIC)) &&
+				ItemDefs[i].baseprice < 10000 &&
+				!(ItemDefs[i].type & IT_SPECIAL) &&
+				!(ItemDefs[i].type & IT_SHIP) &&
+				!(ItemDefs[i].flags & ItemType::DISABLED)) {
+			count--;
+			if (count == 0) {
+				count = 10000 / ItemDefs[i].baseprice;
+				printf("REWARD: %s x %d.\n", ItemDefs[i].name, count);
+				break;
+			}
+		}
+	}
+	
 	item = new Item;
 	item->type = I_RELICOFGRACE;
 	item->num = 1;
 	q->rewards.Add(item);
+
+	item = new Item;
+	item->type = I_SILVER;
+	item->num = 5000 + getrandom(5000);
+	q->rewards.Add(item);
+
+	//--End set up quest rewards
+
 	d = getrandom(100);
 	if (d < 40) {
 		// SLAY quest
@@ -142,8 +184,8 @@ static void CreateQuest(ARegionList *regions, int monfaction)
 			r = (ARegion *) elem;
 			if (TerrainDefs[r->type].similar_type == R_OCEAN)
 				continue;
-			if (!r->visited)
-				continue;
+			// if (!r->visited)
+			// 	continue;
 			forlist(&r->objects) {
 				o = (Object *) elem;
 				forlist(&o->units) {
@@ -162,8 +204,8 @@ static void CreateQuest(ARegionList *regions, int monfaction)
 			r = (ARegion *) elem;
 			if (TerrainDefs[r->type].similar_type == R_OCEAN)
 				continue;
-			if (!r->visited)
-				continue;
+			// if (!r->visited)
+			// 	continue;
 			forlist(&r->objects) {
 				o = (Object *) elem;
 				forlist(&o->units) {
@@ -194,8 +236,8 @@ static void CreateQuest(ARegionList *regions, int monfaction)
 			// Do allow lakes though
 			if (r->type == R_OCEAN)
 				continue;
-			if (!r->visited)
-				continue;
+			// if (!r->visited)
+			// 	continue;
 			forlist(&r->products) {
 				p = (Production *) elem;
 				if (p->itemtype != I_SILVER)
@@ -208,8 +250,8 @@ static void CreateQuest(ARegionList *regions, int monfaction)
 			// Do allow lakes though
 			if (r->type == R_OCEAN)
 				continue;
-			if (!r->visited)
-				continue;
+			// if (!r->visited)
+			// 	continue;
 			forlist(&r->products) {
 				p = (Production *) elem;
 				if (p->itemtype != I_SILVER) {
@@ -241,7 +283,8 @@ static void CreateQuest(ARegionList *regions, int monfaction)
 		temple = O_TEMPLE;
 		forlist(regions) {
 			r = (ARegion *) elem;
-			if (r->Population() > 0 && r->visited) {
+			//if (r->Population() > 0 && r->visited) {
+			if (r->Population() > 0) {
 				stlstr = r->name->Str();
 				// This looks like a null operation, but
 				// actually forces the map<> element creation
@@ -418,7 +461,7 @@ Faction *Game::CheckVictory()
 
 	printf("Players have visited %d regions; %d unvisited.\n", visited, unvisited);
 
-	if (visited >= (unvisited + visited) * QUEST_EXPLORATION_PERCENT / 100) {
+	// if (visited >= (unvisited + visited) * QUEST_EXPLORATION_PERCENT / 100) {
 		// Exploration phase complete: start creating relic quests
 		for (i = 0; i < QUEST_SPAWN_RATE; i++) {
 			if (quests.Num() < MAXIMUM_ACTIVE_QUESTS &&
@@ -428,7 +471,7 @@ Faction *Game::CheckVictory()
 		while (quests.Num() < MINIMUM_ACTIVE_QUESTS) {
 			CreateQuest(&regions, monfaction);
 		}
-	}
+	// }
 	if (unvisited) {
 		// Tell the players to get exploring :-)
 		if (visited > 9 * unvisited) {
