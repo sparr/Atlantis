@@ -1626,7 +1626,6 @@ void Game::ProcessBuildOrder(Unit *unit, AString *o, OrdersCheck *pCheck)
 						obj->SetName(new AString("Building"));
 						unit->build = obj->num;
 						unit->object->region->objects.Add(obj);
-						unit->MoveUnit(obj);
 					} else {
 						unit->Error("BUILD: The region is full.");
 						return;
