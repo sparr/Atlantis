@@ -1615,21 +1615,7 @@ void Game::ProcessBuildOrder(Unit *unit, AString *o, OrdersCheck *pCheck)
 						ParseError(pCheck, unit, 0, "BUILD: Can't build that.");
 						return;
 					}
-					for (i = 1; i < 100; i++)
-						if (!reg->GetObject(i))
-							break;
-					if (i < 100) {
-						Object * obj = new Object(reg);
-						obj->type = ot;
-						obj->incomplete = ObjectDefs[obj->type].cost;
-						obj->num = i;
-						obj->SetName(new AString("Building"));
-						unit->build = obj->num;
-						unit->object->region->objects.Add(obj);
-					} else {
-						unit->Error("BUILD: The region is full.");
-						return;
-					}
+					order->new_building = ot;
 				}
 			}
 			order->target = NULL; // Not helping anyone...
