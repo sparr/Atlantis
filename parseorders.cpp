@@ -1540,7 +1540,7 @@ void Game::ProcessBuildOrder(Unit *unit, AString *o, OrdersCheck *pCheck)
 {
 	AString * token = o->gettoken();
 	BuildOrder * order = new BuildOrder;
-	int maxbuild, i;
+	int maxbuild;
 
 	// 'incomplete' for ships:
 	maxbuild = 0;
