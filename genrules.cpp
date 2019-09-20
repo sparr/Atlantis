@@ -4890,7 +4890,7 @@ int Game::GenRules(const AString &rules, const AString &css,
 		"specified unit's faction.";
 	f.Paragraph(temp);
 	temp = "The classes of items which are acceptable for the fourth form of "
-		"this order are, NORMAL, ADVANCED, TRADE, MAN or MEN, MONSTER or "
+		"this order are, NORMAL, ADVANCED, TRADE, PEOPLE, MONSTER or "
 		"MONSTERS, MAGIC, WEAPON or WEAPONS, ARMOR, MOUNT or MOUNTS, BATTLE, "
 		"SPECIAL, TOOL or TOOLS, FOOD, SHIP or SHIPS and ITEM or ITEMS "
 		"(which is the combination of all of the previous categories).";

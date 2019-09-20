@@ -2264,7 +2264,7 @@ void Game::ProcessGiveOrder(int order, Unit *unit, AString *o, OrdersCheck *pChe
 				} else if (*token == "trade") {
 					item = -IT_TRADE;
 					found = 1;
-				} else if ((*token == "man") || (*token == "men")) {
+				} else if (*token == "people") {
 					item = -IT_MAN;
 					found = 1;
 				} else if ((*token == "monster") || (*token == "monsters")) {
