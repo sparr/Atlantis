@@ -29,8 +29,6 @@
 #include "gamedata.h"
 #include "fileio.h"
 
-#define ITEM_ENABLED(X) (!(ItemDefs[(X)].flags & ItemType::DISABLED))
-
 AString NumToWord(int n)
 {
 	if (n > 20) return AString(n);
@@ -4892,14 +4890,86 @@ int Game::GenRules(const AString &rules, const AString &css,
 		"specified unit's faction.";
 	f.Paragraph(temp);
 	temp = "The classes of items which are acceptable for the fourth form of "
-		"this order are, NORMAL, ADVANCED, TRADE, ";
-	if (!ITEM_ENABLED(I_MAN)) {
-		temp += "MAN OR MEN, ";
+		"this order are, ";
+
+	{
+		AString *normal_item = new AString("normal");
+		if (ParseEnabledItem(normal_item) == -1) {
+			temp += "NORMAL, ";
+		}
+
+		AString *advanced_item = new AString("advanced");
+		if (ParseEnabledItem(advanced_item) == -1) {
+			temp += "ADVANCED, ";
+		}
+
+		AString *trade_item = new AString("trade");
+		if (ParseEnabledItem(trade_item) == -1) {
+			temp += "TRADE, ";
+		}
+
+		AString *monster_item = new AString("monster");
+		if (ParseEnabledItem(monster_item) == -1) {
+			temp += "MONSTER or MONSTERS, ";
+		}
+
+		AString *man_item = new AString("man");
+		if (ParseEnabledItem(man_item) == -1) {
+			temp += "MAN OR MEN, ";
+		}
+
+		AString *magic_item = new AString("magic");
+		if (ParseEnabledItem(magic_item) == -1) {
+			temp += "MAGIC, ";
+		}
+
+		AString *weapon_item = new AString("weapon");
+		if (ParseEnabledItem(weapon_item) == -1) {
+			temp += "WEAPON or WEAPONS, ";
+		}
+
+		AString *armor_item = new AString("armor");
+		if (ParseEnabledItem(armor_item) == -1) {
+			temp += "ARMOR, ";
+		}
+
+		AString *mount_item = new AString("mount");
+		if (ParseEnabledItem(mount_item) == -1) {
+			temp += "MOUNT or MOUNTS, ";
+		}
+
+		AString *battle_item = new AString("battle");
+		if (ParseEnabledItem(battle_item) == -1) {
+			temp += "BATTLE, ";
+		}
+
+		AString *special_item = new AString("special");
+		if (ParseEnabledItem(special_item) == -1) {
+			temp += "SPECIAL, ";
+		}
+
+		AString *tool_item = new AString("tool");
+		if (ParseEnabledItem(tool_item) == -1) {
+			temp += "TOOL or TOOLS, ";
+		}
+
+		AString *food_item = new AString("food");
+		if (ParseEnabledItem(food_item) == -1) {
+			temp += "FOOD, ";
+		}
+
+		AString *ship_item = new AString("ship");
+		if (ParseEnabledItem(ship_item) == -1) {
+			temp += "SHIP or SHIPS, ";
+		}
+
+		AString *item_item = new AString("item");
+		if (ParseEnabledItem(item_item) == -1) {
+			temp += "ITEM or ITEMS ";
+			temp += "(which is the combination of all of the previous categories).";
+		}
 	}
-	temp += "MONSTER or MONSTERS, MAGIC, WEAPON or WEAPONS, ARMOR, "
-		"MOUNT or MOUNTS, BATTLE, "
-		"SPECIAL, TOOL or TOOLS, FOOD, SHIP or SHIPS and ITEM or ITEMS "
-		"(which is the combination of all of the previous categories).";
+
 	f.Paragraph(temp);
 	temp = "A unit may only give items, including silver, to a unit which "
 		"it is able to see, unless the faction of the target unit has "
