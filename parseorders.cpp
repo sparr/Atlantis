@@ -31,8 +31,6 @@
 #include "skills.h"
 #include "gamedata.h"
 
-#define ITEM_ENABLED(X) (!(ItemDefs[(X)].flags & ItemType::DISABLED))
-
 OrdersCheck::OrdersCheck()
 {
 	pCheckFile = 0;
@@ -2255,7 +2253,7 @@ void Game::ProcessGiveOrder(int order, Unit *unit, AString *o, OrdersCheck *pChe
 				item = ParseEnabledItem(token);
 			else
 				item = ParseGiveableItem(token);
-			if (amt == -2) {
+			if (amt == -2 && item == -1) {
 				int found = 0;
 				if (*token == "normal") {
 					item = -IT_NORMAL;
@@ -2266,7 +2264,7 @@ void Game::ProcessGiveOrder(int order, Unit *unit, AString *o, OrdersCheck *pChe
 				} else if (*token == "trade") {
 					item = -IT_TRADE;
 					found = 1;
-				} else if (!ITEM_ENABLED(I_MAN) && ((*token == "man") || (*token == "men"))) {
+				} else if ((*token == "man") || (*token == "men")) {
 					item = -IT_MAN;
 					found = 1;
 				} else if ((*token == "monster") || (*token == "monsters")) {
