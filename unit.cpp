@@ -1067,8 +1067,39 @@ int Unit::GetDefenseRiding()
 	int riding = 0;
 	int weight = Weight();
 
-	if (CanFly(weight)) riding = 5;
-	else if (CanRide(weight)) riding = 3;
+	if (CanFly(weight)) {
+        riding = 5;
+        // Limit riding to the slowest flying mount
+		forlist(&items) {
+			Item *i = (Item *)elem;
+			if (ItemDefs[i->type].type & IT_MOUNT && ItemDefs[i->type].fly) {
+                MountType *mount;
+                mount = FindMount(ItemDefs[i->type].abr);
+                if (mount) {
+                    // If we wanted to apply terrain restrictions,
+                    // we'd do it here
+                    if (mount->maxBonus < riding)
+                        riding = mount->maxBonus;
+                }
+            }
+        }
+	} else if (CanRide(weight)) {
+        riding = 3;
+        // Limit riding to the slowest riding mount
+		forlist(&items) {
+			Item *i = (Item *)elem;
+			if (ItemDefs[i->type].type & IT_MOUNT && ItemDefs[i->type].ride) {
+                MountType *mount;
+                mount = FindMount(ItemDefs[i->type].abr);
+                if (mount) {
+                    // If we wanted to apply terrain restrictions,
+                    // we'd also do it here
+                    if (mount->maxBonus < riding)
+                        riding = mount->maxBonus;
+                }
+            }
+        }
+    }
 
 	if (GetMen()) {
 		int manriding = GetSkill(S_RIDING);
