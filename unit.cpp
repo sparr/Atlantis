@@ -993,7 +993,7 @@ void Unit::ConsumeSharedMoney(int n)
 
 int Unit::GetAttackRiding()
 {
-	int riding = 0;
+    int riding = 0;
 	if (type == U_WMON) {
 		forlist(&items) {
 			Item *i = (Item *) elem;
@@ -1006,9 +1006,9 @@ int Unit::GetAttackRiding()
 		}
 		return riding;
 	} else {
-		riding = GetSkill(S_RIDING);
-		int lowriding = 0;
+		int attackriding = 0;
 		int minweight = 10000;
+        AString skname;
 		forlist(&items) {
 			Item *i = (Item *)elem;
 			if (ItemDefs[i->type].type & IT_MAN)
@@ -1016,15 +1016,47 @@ int Unit::GetAttackRiding()
 					minweight = ItemDefs[i->type].weight;
 		}
 		forlist_reuse (&items) {
+            MountType *mount;
+            int skill, maxBonus;
 			Item *i = (Item *)elem;
-			if (ItemDefs[i->type].fly - ItemDefs[i->type].weight >= minweight)
-				return riding;
-			if (ItemDefs[i->type].ride-ItemDefs[i->type].weight >= minweight) {
-				if (riding <= 3) return riding;
-				lowriding = 3;
-			}
+            if (!(ItemDefs[i->type].type & IT_MOUNT))
+                continue;
+            mount = FindMount(ItemDefs[i->type].abr);
+            if (!mount)
+                continue;
+            maxBonus = mount->maxBonus;
+            /*
+             * This code applies terrain restrictions to the attack riding
+             * calculations, but given that these have never been applied
+             * historically we probably don't want to start now.
+             * Thus: for reference only.
+            int canRide = TerrainDefs[object->region->type].flags & TerrainType::RIDINGMOUNTS;
+            int canFly = TerrainDefs[object->region->type].flags & TerrainType::FLYINGMOUNTS;
+            if (canRide && !canFly)
+                maxBonus = mount->maxHamperedBonus;
+            if (!canRide && !canFly)
+                maxBonus = 0;
+            */
+            skname = mount->skill;
+            skill = LookupSkill(&skname);
+            if (skill == -1) {
+                // This mount doesn't require skill to use.
+                // I guess the rider gets the max bonus!
+                if (attackriding < maxBonus)
+                    attackriding = maxBonus;
+            } else {
+                riding = GetSkill(skill);
+                if ((ItemDefs[i->type].type & IT_MAN)
+                        || (ItemDefs[i->type].fly - ItemDefs[i->type].weight >= minweight)
+                        || (ItemDefs[i->type].ride - ItemDefs[i->type].weight >= minweight)) {
+                    if (riding > maxBonus)
+                        riding = maxBonus;
+                    if (attackriding < riding)
+                        attackriding = riding;
+                }
+            }
 		}
-		return lowriding;
+		return attackriding;
 	}
 }
 
