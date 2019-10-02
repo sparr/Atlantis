@@ -2239,7 +2239,7 @@ int Game::GenRules(const AString &rules, const AString &css,
 			temp += " silver worth of food can be counted against each "
 					"man's maintenance. ";
 		}
-		temp += "Food consumption is per unit, not per region; any leftover fraction of a food item from a unit will be wasted, so two 1-man units might consume more food than one 2-man unit. ";
+		temp += "Food consumption is per unit, not per region, and any leftovers are lost. Multiple small units may consume more food than the same men in one large unit. ";
 		temp += "A unit may use the ";
 		temp += f.Link("#consume", "CONSUME") + " order to specify that it "
 			"wishes to use food items in preference to silver.  Note that ";
